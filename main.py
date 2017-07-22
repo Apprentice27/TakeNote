@@ -1,7 +1,6 @@
 import tkinter as tk
 import data
 
-
 data.saveFilesToList()
 
 # creating the root or 'master/parent' window
@@ -22,7 +21,6 @@ window_y_pos = int((root.winfo_screenheight() / 2) - (window_height / 2))
 
 # using the previous four variables to set the windows dimension and position
 root.geometry(str(window_width) + 'x' + str(window_height) + '+' + str(window_x_pos) + '+' + str(window_y_pos))
-
 
 main_frame = tk.Frame(root)
 main_frame.pack()
@@ -78,11 +76,9 @@ file_tree_button_list = []
 working_file_page_frame = tk.Frame(main_frame, bd=0, highlightthickness=0)
 working_file_page_frame.pack(side='left', anchor='nw')
 
-
 # Creating working file
 working_file = tk.Text(working_file_page_frame, width=600, wrap='word')
 working_file.pack(side='bottom', anchor='w', fill='y')
-
 
 # setting a label to tell user what to enter in the text entry
 working_file_name_label = tk.Label(working_file_page_frame, text='File Name:')
@@ -112,30 +108,8 @@ def saveFile():
 
     # add new button if it is a new file
     if data.permissionToCreateButton():
-        new_file_tree_button = tk.Button(file_tree_button_frame, text=working_file_name_given, command=lambda: openFile(working_file_name_given))
-        new_file_tree_button.pack()
-        file_tree_button_list.append(new_file_tree_button)
-    else: #TODO: what to do if not a new file
-        pass
+        Btn(working_file_name_given)
 
-
-def openFile(btn_title):
-    """
-    This function will display the data for a given button if pressed
-    
-    :param btn_title: 
-    :return: 
-    """
-    global working_file
-
-    print(btn_title)
-
-    for file in data.all_files_and_titles:
-        if file[0] == btn_title:
-            working_file.delete('1.0', 'end')
-            working_file.insert('1.0', file[1])
-
-    # file_data = data.getFileData(btn_title)
 
 # Creating an entry for the user to set the file's name
 file_name = tk.Entry(working_file_page_frame, textvariable=file_name_given_by_user)
@@ -146,26 +120,25 @@ save_file_btn = tk.Button(working_file_page_frame, text='Save', command=saveFile
 save_file_btn.pack(side='left', anchor='w')
 
 
+class Btn:
+    def __init__(self, f_name):
+        self.f_name = f_name
+        self.btn = tk.Button(file_tree_button_frame, text=self.f_name)
+        self.btn.config(command=lambda: self.callback())
+        self.btn.pack()
+
+    def callback(self):
+        for file in data.all_files_and_titles:
+            if file[0] == self.f_name:
+                file_name.delete(0, 'end')
+                file_name.insert(0, file[0])
+
+                working_file.delete('1.0', 'end')
+                working_file.insert('1.0', file[1])
+
+# Creating all the file tree buttons
 for f in data.all_files_and_titles:
-    print('From line152: ' + str(f[0]))
-    btn = tk.Button(file_tree_button_frame, text=f[0])
-    btn_and_name = [btn, f[0]]
-    file_tree_button_list.append(btn_and_name)
-
-for btn in file_tree_button_list:
-    print('From line158: ' + str(btn[0]))
-    print('From line158: ' + str(btn[1]))
-    btn[0]["command"] = lambda: openFile(btn[1])
-    print('From line158: ' + str(btn[0]["command"]))
-    btn[0].pack()
-
-
-# this prints out all the buttons in the file tree button list
-file_num = 1
-for button in file_tree_button_list:
-    print(str(file_num) + ': ' + str(button[0]) + " : " + button[0]['text'])
-    file_num += 1
-
+    file_btn = Btn(f[0])
 
 # running the app
 root.mainloop()
