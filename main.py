@@ -96,7 +96,7 @@ def saveFile():
     
     :return: 
     """
-
+    
     working_file_name_given = file_name_given_by_user.get()
     working_file_data = working_file.get(1.0, 'end-1c')
 
@@ -108,9 +108,25 @@ def saveFile():
 
     # add new button if it is a new file
     if data.permissionToCreateButton():
-        Btn(working_file_name_given)
+        FileBtn(working_file_name_given)
 
+        
+def deleteFile():
+    working_file_name_given = file_name_given_by_user.get()
+    working_file_data = working_file.get(1.0, 'end-1c')
 
+    print('Deleting File name: ' + working_file_name_given)
+    print('Deleting File data: ' + working_file_data)
+    print("Done")
+
+    data.deleteFileFromDatabase(working_file_name_given, working_file_data)
+
+    for btn in file_tree_button_list:
+        if btn.f_name == working_file_name_given:
+            btn.btn.pack_forget()
+            file_tree_button_list.remove(btn)
+
+            
 # Creating an entry for the user to set the file's name
 file_name = tk.Entry(working_file_page_frame, textvariable=file_name_given_by_user)
 file_name.pack(side='left', anchor='w')
@@ -119,8 +135,11 @@ file_name.pack(side='left', anchor='w')
 save_file_btn = tk.Button(working_file_page_frame, text='Save', command=saveFile)
 save_file_btn.pack(side='left', anchor='w')
 
+# Creating this button to handle file deletion
+delete_file_btn = tk.Button(working_file_page_frame, text='Delete', command=deleteFile)
+delete_file_btn.pack(side='right', anchor='e')
 
-class Btn:
+class FileBtn:
     def __init__(self, f_name):
         self.f_name = f_name
         self.btn = tk.Button(file_tree_button_frame, text=self.f_name)
@@ -135,10 +154,11 @@ class Btn:
 
                 working_file.delete('1.0', 'end')
                 working_file.insert('1.0', file[1])
-
+                
 # Creating all the file tree buttons
 for f in data.all_files_and_titles:
-    file_btn = Btn(f[0])
+    file_btn = FileBtn(f[0])
+    file_tree_button_list.append(file_btn)
 
 # running the app
 root.mainloop()
